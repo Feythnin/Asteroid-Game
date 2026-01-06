@@ -7,6 +7,7 @@ from circleshape import *
 from logger import log_state, log_event
 from player import Player
 from shot import Shot
+from score import *
 
 
 def main():
@@ -18,12 +19,15 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    score = pygame.sprite.Group()
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable,)
     Shot.containers = (shots, updatable, drawable)
+    Score.containers = (score,)
     asteroidfield = AsteroidField()
     player = Player((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+    score_display = Score(10, 10)
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -39,6 +43,8 @@ def main():
         updatable.update(dt)
         for drawings in drawable:
             drawings.draw(screen)
+        
+        score_display.draw(screen)
         for aster in asteroids:
             if aster.collides_with(player):
                 log_event("player_hit")
@@ -48,6 +54,8 @@ def main():
             for shot in shots:
                 if shot.collides_with(ast):
                     ast.split(dt)
+                    score_display.add_points(1)
+                    
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
